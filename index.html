@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商务收款台 | 佰新</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg: #f0f4f8;
+            --card-bg: #ffffff;
+            --primary: #0d1f3c;
+            --accent-blue: #1a56db;
+            --accent-green: #07c160;
+            --accent-alipay: #1677ff;
+            --text: #1a202c;
+            --text-muted: #6b7280;
+            --border: #e5e9f0;
+            --shadow-card: 0 8px 32px rgba(13,31,60,0.10), 0 2px 8px rgba(13,31,60,0.06);
+            --shadow-btn: 0 4px 16px rgba(26,86,219,0.25);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 32px 16px 48px;
+            background-image:
+                radial-gradient(ellipse 80% 60% at 10% 0%, rgba(26,86,219,0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 100%, rgba(7,193,96,0.06) 0%, transparent 50%);
+        }
+        .container { width: 100%; max-width: 500px; }
+        .brand-header { text-align:center; margin-bottom:28px; animation: fadeDown 0.6s ease both; }
+        .brand-logo-wrap {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: var(--card-bg); border: 1px solid var(--border);
+            border-radius: 50px; padding: 10px 24px 10px 16px;
+            box-shadow: var(--shadow-card); margin-bottom: 14px;
+        }
+        .brand-icon {
+            width:40px; height:40px;
+            background: linear-gradient(135deg, var(--primary) 0%, #2d4a8a 100%);
+            border-radius:10px; display:flex; align-items:center; justify-content:center;
+            color:#fff; font-size:18px; box-shadow:0 2px 8px rgba(13,31,60,0.25);
+        }
+        .brand-name { font-family:'Noto Serif SC',serif; font-size:22px; font-weight:700; color:var(--primary); letter-spacing:2px; }
+        .brand-subtitle { font-size:13px; color:var(--text-muted); letter-spacing:3px; text-transform:uppercase; }
+        .payment-card {
+            background:var(--card-bg); border-radius:var(--radius);
+            box-shadow:var(--shadow-card); overflow:hidden; margin-bottom:20px;
+            border:1px solid var(--border); animation:fadeUp 0.6s 0.1s ease both;
+        }
+        .card-topbar { height:4px; background:linear-gradient(90deg,var(--accent-alipay) 0%,var(--accent-blue) 40%,var(--accent-green) 100%); }
+        .card-header {
+            padding:20px 24px 18px; display:flex; align-items:center; gap:12px;
+            border-bottom:1px solid var(--border); background:linear-gradient(135deg,#f8faff 0%,#ffffff 100%);
+        }
+        .card-header-icon {
+            width:36px; height:36px; background:linear-gradient(135deg,var(--accent-blue),#3b82f6);
+            border-radius:9px; display:flex; align-items:center; justify-content:center;
+            color:#fff; font-size:15px; flex-shrink:0; box-shadow:0 2px 8px rgba(26,86,219,0.25);
+        }
+        .card-title { font-size:17px; font-weight:600; color:var(--primary); letter-spacing:0.5px; }
+        .card-title-sub { font-size:12px; color:var(--text-muted); margin-top:2px; }
+        .secure-badge {
+            margin-left:auto; display:flex; align-items:center; gap:5px;
+            background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;
+            border-radius:20px; padding:4px 10px; font-size:11px; font-weight:500; white-space:nowrap;
+        }
+        .card-body { padding:24px 24px 28px; }
+        .payment-methods {
+            display:flex; gap:10px; margin-bottom:24px;
+            background:#f3f6fb; border-radius:var(--radius-sm); padding:6px;
+        }
+        .method-selector {
+            flex:1; padding:14px 10px; border:none; background:transparent;
+            border-radius:8px; display:flex; flex-direction:column; align-items:center;
+            gap:8px; cursor:pointer; transition:all 0.28s ease; position:relative;
+        }
+        .method-selector.active { background:var(--card-bg); box-shadow:0 2px 10px rgba(0,0,0,0.09); }
+        .method-logo {
+            width:48px; height:48px; border-radius:12px; display:flex;
+            align-items:center; justify-content:center; font-size:28px; transition:transform 0.28s ease;
+        }
+        .method-selector:hover .method-logo { transform:scale(1.05); }
+        .method-selector.alipay .method-logo { background:linear-gradient(135deg,#e8f3ff 0%,#cce5ff 100%); color:var(--accent-alipay); }
+        .method-selector.wechat .method-logo { background:linear-gradient(135deg,#e8fdf0 0%,#c6f6d5 100%); color:var(--accent-green); }
+        .method-name { font-size:13px; font-weight:500; color:var(--text-muted); transition:color 0.28s; }
+        .method-selector.active .method-name { color:var(--primary); font-weight:600; }
+        .method-active-dot {
+            width:6px; height:6px; border-radius:50%; background:var(--accent-blue);
+            position:absolute; bottom:6px; left:50%;
+            transform:translateX(-50%) scale(0); transition:transform 0.25s ease;
+        }
+        .method-selector.active .method-active-dot { transform:translateX(-50%) scale(1); }
+        .method-selector.alipay.active .method-active-dot { background:var(--accent-alipay); }
+        .method-selector.wechat.active .method-active-dot { background:var(--accent-green); }
+        .payment-content { display:none; }
+        .payment-content.active { display:block; animation:fadeIn 0.35s ease both; }
+        .payment-instruction { text-align:center; font-size:14px; color:var(--text-muted); margin-bottom:18px; line-height:1.6; }
+        .qr-section {
+            background:linear-gradient(135deg,#f8faff 0%,#f0f7f4 100%);
+            border-radius:var(--radius-sm); padding:20px 16px 16px;
+            border:1px solid var(--border); text-align:center; margin-bottom:8px;
+        }
+        .qr-brand-strip { display:flex; align-items:center; justify-content:center; gap:8px; margin-bottom:14px; }
+        .qr-brand-strip .strip-logo {
+            width:28px; height:28px; border-radius:7px;
+            display:flex; align-items:center; justify-content:center; font-size:16px;
+        }
+        .alipay-strip .strip-logo { background:var(--accent-alipay); color:#fff; }
+        .wechat-strip .strip-logo { background:var(--accent-green); color:#fff; }
+        .strip-label { font-size:14px; font-weight:600; color:var(--primary); letter-spacing:0.5px; }
+        .strip-divider { width:1px; height:14px; background:var(--border); }
+        .strip-hint { font-size:12px; color:var(--text-muted); }
+        .qr-frame {
+            width:368px; height:368px; margin:0 auto 14px;
+            background:var(--card-bg); border-radius:14px; padding:10px;
+            border:1.5px solid var(--border); box-shadow:0 2px 12px rgba(0,0,0,0.07);
+            display:flex; align-items:center; justify-content:center; position:relative;
+        }
+        .qr-frame::before,.qr-frame::after {
+            content:''; position:absolute; width:20px; height:20px;
+            border-color:var(--accent-alipay); border-style:solid; border-radius:3px; z-index:2;
+        }
+        .qr-frame::before { top:7px; left:7px; border-width:2.5px 0 0 2.5px; }
+        .qr-frame::after  { bottom:7px; right:7px; border-width:0 2.5px 2.5px 0; }
+        .qr-frame.wechat-frame::before,.qr-frame.wechat-frame::after { border-color:var(--accent-green); }
+        .qr-inner {
+            width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+            background:#fff; border-radius:6px; overflow:hidden;
+        }
+        .qr-code { display:block; max-width:100%; max-height:100%; width:auto; height:auto; object-fit:contain; }
+        .status-indicator {
+            display:inline-flex; align-items:center; gap:6px;
+            background:#ecfdf5; color:#059669; border:1px solid #a7f3d0;
+            border-radius:20px; padding:5px 14px; font-size:12px; font-weight:500;
+        }
+        .status-dot { width:7px; height:7px; background:#10b981; border-radius:50%; animation:pulse 2s infinite; }
+        .alternative-payment { margin-top:20px; }
+        .payment-button {
+            display:block; width:100%; padding:16px;
+            background:linear-gradient(135deg,#1a56db 0%,#3b82f6 100%);
+            color:#fff; text-align:center; text-decoration:none;
+            font-size:15px; font-weight:600; border-radius:var(--radius-sm);
+            border:none; cursor:pointer; transition:all 0.3s ease;
+            box-shadow:var(--shadow-btn); letter-spacing:0.5px; position:relative; overflow:hidden;
+        }
+        .payment-button::before {
+            content:''; position:absolute; top:0; left:-100%;
+            width:60%; height:100%;
+            background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+            transition:left 0.5s ease;
+        }
+        .payment-button:hover::before { left:150%; }
+        .payment-button:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,86,219,0.35); }
+        .payment-button:active { transform:translateY(0); }
+        .button-text { display:flex; align-items:center; justify-content:center; gap:10px; }
+        .info-panel {
+            background:var(--card-bg); border-radius:var(--radius); padding:22px 22px 20px;
+            margin-bottom:20px; box-shadow:var(--shadow-card); border:1px solid var(--border);
+            animation:fadeUp 0.6s 0.2s ease both;
+        }
+        .panel-title {
+            display:flex; align-items:center; gap:10px; font-size:15px;
+            font-weight:600; color:var(--primary); margin-bottom:16px;
+            padding-bottom:14px; border-bottom:1px solid var(--border);
+        }
+        .panel-title-icon {
+            width:28px; height:28px; background:linear-gradient(135deg,#eff6ff,#dbeafe);
+            border-radius:7px; display:flex; align-items:center; justify-content:center;
+            color:var(--accent-blue); font-size:13px;
+        }
+        .info-grid { display:flex; flex-direction:column; gap:11px; margin-bottom:18px; }
+        .info-item {
+            display:flex; align-items:flex-start; gap:10px; padding:10px 12px;
+            background:#f8fafc; border-radius:8px; border:1px solid #edf2f7;
+        }
+        .info-item-icon {
+            width:26px; height:26px; border-radius:6px; display:flex;
+            align-items:center; justify-content:center; font-size:12px; flex-shrink:0; margin-top:1px;
+        }
+        .info-item:nth-child(1) .info-item-icon { background:#eff6ff; color:#2563eb; }
+        .info-item:nth-child(2) .info-item-icon { background:#fefce8; color:#ca8a04; }
+        .info-item:nth-child(3) .info-item-icon { background:#f0fdf4; color:#16a34a; }
+        .info-text { font-size:13px; color:var(--text-muted); line-height:1.6; }
+        .contact-info {
+            background:linear-gradient(135deg,#0d1f3c 0%,#1e3a5f 100%);
+            border-radius:10px; padding:14px 16px; display:flex; gap:12px; align-items:stretch;
+        }
+        .contact-item {
+            flex:1; display:flex; flex-direction:column; align-items:center; gap:6px;
+            padding:10px 8px; background:rgba(255,255,255,0.07);
+            border-radius:8px; border:1px solid rgba(255,255,255,0.1);
+        }
+        .contact-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+        .contact-item.qq .contact-icon { background:#1b8ff7; color:#fff; }
+        .contact-item.wechat .contact-icon { background:var(--accent-green); color:#fff; }
+        .contact-label { font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:1px; text-transform:uppercase; }
+        .contact-value { font-size:13px; color:rgba(255,255,255,0.9); font-weight:500; letter-spacing:0.3px; }
+        .platform-logos { display:flex; align-items:center; justify-content:center; gap:16px; margin-bottom:20px; animation:fadeUp 0.6s 0.15s ease both; }
+        .platform-tag {
+            display:flex; align-items:center; gap:7px; background:var(--card-bg);
+            border:1px solid var(--border); border-radius:30px; padding:7px 14px;
+            box-shadow:0 1px 4px rgba(0,0,0,0.06); font-size:13px; font-weight:500; color:var(--text);
+        }
+        .platform-tag .pt-icon { font-size:18px; }
+        .platform-tag.alipay .pt-icon { color:var(--accent-alipay); }
+        .platform-tag.wechat .pt-icon { color:var(--accent-green); }
+        .platform-sep { width:4px; height:4px; background:var(--border); border-radius:50%; }
+        .footer { text-align:center; color:var(--text-muted); font-size:12px; line-height:1.8; animation:fadeUp 0.6s 0.3s ease both; }
+        .footer a { color:var(--accent-blue); text-decoration:none; }
+        @keyframes fadeDown { from{opacity:0;transform:translateY(-16px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeUp   { from{opacity:0;transform:translateY(16px)}  to{opacity:1;transform:translateY(0)} }
+        @keyframes fadeIn   { from{opacity:0;transform:scale(0.98)}       to{opacity:1;transform:scale(1)} }
+        @keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        @media(max-width:480px){
+            body{padding:20px 12px 40px}
+            .card-body{padding:20px 16px 22px}
+            .qr-frame{width:180px;height:180px}
+            .info-panel{padding:18px 16px}
+            .platform-logos{gap:8px}
+            .platform-tag{padding:6px 10px;font-size:12px}
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <div class="brand-header">
+        <div class="brand-logo-wrap">
+            <div class="brand-icon"><i class="fas fa-store-alt"></i></div>
+            <div><div class="brand-name">佰新系统</div></div>
+        </div>
+        <div class="brand-subtitle">商务收款服务</div>
+    </div>
+
+    <div class="platform-logos">
+        <div class="platform-tag alipay">
+            <span class="pt-icon"><i class="fab fa-alipay"></i></span>支付宝
+        </div>
+        <div class="platform-sep"></div>
+        <div class="platform-tag wechat">
+            <span class="pt-icon"><i class="fab fa-weixin"></i></span>微信支付
+        </div>
+
+    </div>
+
+    <div class="payment-card">
+        <div class="card-topbar"></div>
+        <div class="card-header">
+            <div class="card-header-icon"><i class="fas fa-qrcode"></i></div>
+            <div>
+                <div class="card-title">选择支付方式</div>
+                <div class="card-title-sub">扫描二维码完成支付</div>
+            </div>
+            <div class="secure-badge">
+                <i class="fas fa-lock" style="font-size:10px"></i>安全支付
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="payment-methods">
+                <div class="method-selector alipay active" data-target="alipay-content">
+                    <div class="method-logo"><i class="fab fa-alipay"></i></div>
+                    <div class="method-name">支付宝</div>
+                    <div class="method-active-dot"></div>
+                </div>
+                <div class="method-selector wechat" data-target="wechat-content">
+                    <div class="method-logo"><i class="fab fa-weixin"></i></div>
+                    <div class="method-name">微信支付</div>
+                    <div class="method-active-dot"></div>
+                </div>
+            </div>
+
+            <div id="alipay-content" class="payment-content active">
+                <p class="payment-instruction">打开支付宝扫一扫，扫描下方二维码完成支付</p>
+                <div class="qr-section">
+                    <div class="qr-brand-strip alipay-strip">
+                        <div class="strip-logo"><i class="fab fa-alipay"></i></div>
+                        <span class="strip-label">支付宝收款</span>
+                        <div class="strip-divider"></div>
+                        <span class="strip-hint">Alipay</span>
+                    </div>
+                    <div class="qr-frame">
+                        <div class="qr-inner">
+                            <img src="./zfb.jpg" alt="支付宝支付二维码" class="qr-code">
+                        </div>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>支付时请备注您需要搭建的系统
+                    </div>
+                </div>
+            </div>
+
+            <div id="wechat-content" class="payment-content">
+                <p class="payment-instruction">打开微信扫一扫，扫描下方二维码完成支付</p>
+                <div class="qr-section">
+                    <div class="qr-brand-strip wechat-strip">
+                        <div class="strip-logo"><i class="fab fa-weixin"></i></div>
+                        <span class="strip-label">微信收款</span>
+                        <div class="strip-divider"></div>
+                        <span class="strip-hint">WeChat Pay</span>
+                    </div>
+                    <div class="qr-frame wechat-frame">
+                        <div class="qr-inner">
+                            <img src="./wx.jpg" alt="微信支付二维码" class="qr-code">
+                        </div>
+                    </div>
+                    <div class="status-indicator" style="background:#f0fdf4;color:#059669;border-color:#bbf7d0;">
+                        <div class="status-dot" style="background:#22c55e;"></div>支付时请备注您需要搭建的系统
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="panel-title">
+            <div class="panel-title-icon"><i class="fas fa-info-circle"></i></div>
+            支付说明与注意事项
+        </div>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-item-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="info-text">认准佰新付费系统，已做版权登记。未经授权并使用系统，将依法追究责任</div>
+            </div>
+            <div class="info-item">
+                <div class="info-item-icon"><i class="fas fa-sync-alt"></i></div>
+                <div class="info-text">本次交易作用于网站系统搭建服务费用。</div>
+            </div>
+            <div class="info-item">
+                <div class="info-item-icon"><i class="fas fa-history"></i></div>
+                <div class="info-text">本收款页面仅限与佰新确认交易内容后使用，确保支付安全。</div>
+            </div>
+        </div>
+        <div class="contact-info">
+            <div class="contact-item qq">
+                <div class="contact-icon"><i class="fab fa-qq"></i></div>
+                <div class="contact-label">唯一 QQ</div>
+                <div class="contact-value">202273772</div>
+            </div>
+            <div class="contact-item wechat">
+                <div class="contact-icon"><i class="fab fa-weixin"></i></div>
+                <div class="contact-label">唯一微信公众号</div>
+                <div class="contact-value">佰新笔记</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 佰新 版权所有 | 专业商务服务提供者</p>
+        <p>如有疑问，请通过上方联系方式咨询客服</p>
+    </div>
+
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectors = document.querySelectorAll('.method-selector');
+        const contents  = document.querySelectorAll('.payment-content');
+        selectors.forEach(sel => {
+            sel.addEventListener('click', function () {
+                selectors.forEach(s => s.classList.remove('active'));
+                this.classList.add('active');
+                const targetId = this.getAttribute('data-target');
+                contents.forEach(c => c.classList.remove('active'));
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+    });
+</script>
+</body>
+</html>
